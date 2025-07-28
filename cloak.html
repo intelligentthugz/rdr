@@ -1,1 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Securing Connection...</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      background-color: black;
+      color: lime;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .loader {
+      font-size: 1.5rem;
+      margin-top: 20px;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0% { opacity: 0.2; }
+      50% { opacity: 1; }
+      100% { opacity: 0.2; }
+    }
+  </style>
+</head>
+<body>
+  <h2>🔐 Securing connection...</h2>
+  <p class="loader">Please wait</p>
+
+  <script>
+    // Get real link from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const redirectTo = urlParams.get('to');
+    
+    if (redirectTo) {
+      setTimeout(() => {
+        window.location.href = redirectTo;
+      }, 2500); // delay 2.5 seconds
+    } else {
+      document.body.innerHTML = "<h3>No redirect link provided.</h3>";
+    }
+  </script>
+</body>
+</html>
 
