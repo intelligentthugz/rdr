@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ghost Redirector Admin</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; background: #111; color: #eee; }
+    input, button { padding: 8px; margin: 5px; }
+    input[type="text"] { width: 300px; }
+    .link-list { margin-top: 20px; }
+    .code { color: #0f0; font-weight: bold; }
+    .url { color: #0cf; }
+  </style>
+</head>
+<body>
+  <h1>👻 Ghost Redirector Admin</h1>
+  <form method="POST" action="/add">
+    <label>Code (optional):</label>
+    <input type="text" name="code" placeholder="Leave empty for random">
+    <br>
+    <label>URL to redirect to:</label>
+    <input type="text" name="url" required>
+    <br>
+    <button type="submit">➕ Add Link</button>
+  </form>
+
+  <div class="link-list">
+    <h2>📜 All Links:</h2>
+    <% for (let code in links) { %>
+      <div>
+        🔗 <span class="code"><%= code %></span> → 
+        <a class="url" href="/goto/<%= code %>" target="_blank"><%= links[code] %></a>
+      </div>
+    <% } %>
+  </div>
+</body>
+</html>
