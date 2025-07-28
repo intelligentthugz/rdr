@@ -1,38 +1,38 @@
-const express = require("express");
+const express = require('express');
+const fs = require('fs');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 
-// Fake fingerprinting for stealth
-app.use((req, res, next) => {
-  res.setHeader("X-Powered-By", "PHP/7.4.3");
-  res.setHeader("Server", "Apache");
-  res.setHeader("Cache-Control", "no-store");
-  next();
+const LINKS_FILE = 'links.json';
+
+// Load existing links or initialize
+let links = {};
+if (fs.existsSync(LINKS_FILE)) {
+  links = JSON.parse(fs.readFileSync(LINKS_FILE));
+}
+
+// Redirect route
+app.get('/goto/:code', (req, res) => {
+  const code = req.params.code;
+  const url = links[code];
+  if (url) {
+    res.redirect(url);
+  } else {
+    res.status(404).send('Shortlink not found');
+  }
 });
 
-// Redirect map
-const redirectMap = {
-  "8Jdks9z": "https://example.com",
-  "t92LoaX": "https://github.com",
-  "rhomani": "https://rhomani.com",
-};
+// Add new shortlink via query (e.g. /add?code=ai&url=https://chat.openai.com)
+app.get('/add', (req, res) => {
+  const { code, url } = req.query;
 
-// Route for /goto/:id
-app.get("/goto/:id", (req, res) => {
-  const id = req.params.id;
-
-  if (redirectMap[id]) {
-    console.log(`[+] Redirecting to: ${redirectMap[id]}`);
-    return res.redirect(302, redirectMap[id]);
+  if (!code || !url) {
+    return res.status(400).send('Missing code or url');
   }
 
-  // If ID not found
-  res.status(404).send("Page not found.");
-});
-
-// Default homepage
-app.get("/", (req, res) => {
-  res.send("👻 Ghost Redirector active. Nothing to see here.");
+  links[code] = url;
+  fs.writeFileSync(LINKS_FILE, JSON.stringify(links, null, 2));
+  res.send(`Shortlink added: ${code} -> ${url}`);
 });
 
 app.listen(PORT, () => {
