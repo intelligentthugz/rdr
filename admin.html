@@ -1,1 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ghost Redirector Admin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #111;
+      color: #eee;
+    }
+    h2 {
+      color: #1dfc71;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+    }
+    input {
+      width: 250px;
+    }
+    button {
+      background: #1dfc71;
+      cursor: pointer;
+    }
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #555;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔗 Ghost Redirector Admin</h2>
+  <form id="linkForm">
+    <input type="text" id="code" placeholder="Short Code (e.g. ai)" required>
+    <input type="url" id="url" placeholder="Destination URL" required>
+    <button type="submit">Add Link</button>
+  </form>
+
+  <table id="linksTable">
+    <thead>
+      <tr>
+        <th>Short Code</th>
+        <th>URL</th>
+        <th>Redirect Link</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('linkForm');
+    const table = document.getElementById('linksTable').querySelector('tbody');
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const code = document.getElementById('code').value;
+      const url = document.getElementById('url').value;
+
+      await fetch(`/add?code=${encodeURIComponent(code)}&url=${encodeURIComponent(url)}`);
+      loadLinks();
+    };
+
+    async function loadLinks() {
+      const res = await fetch('/list');
+      const links = await res.json();
+      table.innerHTML = '';
+
+      Object.keys(links).forEach(code => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${code}</td>
+          <td>${links[code]}</td>
+          <td><a href="/${code}" target="_blank">${window.location.origin}/${code}</a></td>
+        `;
+        table.appendChild(tr);
+      });
+    }
+
+    loadLinks();
+  </script>
+</body>
+</html>
 
